@@ -1,21 +1,27 @@
 //! ISIN code validation
 //!
-//! An ISIN code consists of
+//! An ISIN code consists of:
 //!
 //!  * A two-letter country code
 //!  * A nine-character alpha-numeric national security identifier
 //!  * A single check digit
 //!
-//! 
 
-/// Check if input is valid ISIN code or not
+/// Compute an ISIN checksum from the given input, if possible.
 ///
-pub fn validate_isin(input: &str) -> bool {
+/// Returns the computed checksum and the checksum digit (the last digit) or
+/// `None` if the input is malformed in some way.
+pub fn compute_isin_checksum(input: &str) -> Option<(u8, u8)> {
     if input.len() != 12 {
-        return false;
+        return None
     }
     if !input.chars().all(|c| c.is_ascii()) {
-        return false;
+        return None
+    }
+    for c in input[0..2].bytes() {
+        if c < b'A' || c > b'Z' {
+            return None
+        }
     }
 
     // The trick here is that we should view the array of numbers as a single
@@ -33,6 +39,17 @@ pub fn validate_isin(input: &str) -> bool {
             }
             v
         });
+
+    // Computing the checksum.
+    //
+    // Half of the numbers should be multiplied by two: Imagine splitting the
+    // digits into two sets, one for even positions and one for odd. The set
+    // that contains the last digit of the input (disregarding the checksum
+    // digit) should have all its entries multiplied by two.
+    //
+    // All the numbers are then summed together. If a number is larger than 10
+    // (after being doubled) its individiual digits are added, for example 14 is
+    // added as 1 and 4.
 
     let mut checksum = 0;
     let mut flag = (digits.len() - 1) % 2 == 0;
@@ -52,7 +69,15 @@ pub fn validate_isin(input: &str) -> bool {
     }
 
     let c = (10 - (checksum % 10)) % 10;
-    c == digits[digits.len()-1]
+    Some((c, digits[digits.len()-1]))
+}
+
+/// Check if input is valid ISIN code or not
+///
+pub fn validate_isin(input: &str) -> bool {
+    compute_isin_checksum(input)
+        .map(|(sum, check)| sum == check)
+        .unwrap_or(false)
 }
 
 #[cfg(test)]
@@ -60,7 +85,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn it_works() {
+    fn validate_works() {
         let cases = vec![
             ("foo", false),
             ("US30231G1022", true),
@@ -81,6 +106,33 @@ mod tests {
 
         for (input, expected) in cases {
             assert_eq!(validate_isin(input), expected, "input = {} (expected: {})", input, expected);
+        }
+    }
+
+    #[test]
+    fn compute_works() {
+        let cases = vec![
+            ("foo", None),
+            ("US30231G10227", None),
+            ("U330231G1022", None),
+            ("US30231G1022", Some((2, 2))),
+            ("US0378331005", Some((5, 5))),
+            ("US38259P5089", Some((9, 9))),
+            ("US0378331006", Some((5, 6))),
+            ("AU0000XVGZA3", Some((3, 3))),
+            ("AU0000VXGZA3", Some((3, 3))),
+            ("RO1718CTN047", Some((7, 7))),
+            ("RO1418DBN040", Some((0, 0))),
+            ("RO1617CTNOG6", Some((5, 6))),
+            ("RO1617CTNOG5", Some((5, 5))),
+            ("RO1718CTN0C3", Some((3, 3))),
+            ("GB0002634946", Some((6, 6))),
+            ("NL0000729408", Some((8, 8))),
+            ("DE000CM7VX13", Some((3, 3))),
+        ];
+
+        for (input, expected) in cases {
+            assert_eq!(compute_isin_checksum(input), expected, "input = {:?} (expected: {:?})", input, expected);
         }
     }
 }
