@@ -1,0 +1,6 @@
+[package]
+name = "isincodes"
+version = "0.1.0"
+authors = ["Thomas Jespersen <laumann.thomas@gmail.com>"]
+
+[dependencies]
