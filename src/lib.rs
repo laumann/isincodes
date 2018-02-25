@@ -51,9 +51,10 @@ pub fn compute_isin_checksum(input: &str) -> Option<(u8, u8)> {
     // (after being doubled) its individiual digits are added, for example 14 is
     // added as 1 and 4.
 
+    let l = digits.len() - 1;
     let mut checksum = 0;
-    let mut flag = (digits.len() - 1) % 2 == 0;
-    for &d in &digits[0..digits.len()-1] {
+    let mut flag = l % 2 == 0;
+    for &d in &digits[0..l] {
         if flag {
             checksum += d;
         } else {
@@ -69,7 +70,7 @@ pub fn compute_isin_checksum(input: &str) -> Option<(u8, u8)> {
     }
 
     let c = (10 - (checksum % 10)) % 10;
-    Some((c, digits[digits.len()-1]))
+    Some((c, digits[l]))
 }
 
 /// Check if input is valid ISIN code or not
