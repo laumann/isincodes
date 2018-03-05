@@ -15,9 +15,6 @@ pub fn compute_isin_checksum(input: &str) -> Option<(u8, u8)> {
     if input.len() != 12 {
         return None
     }
-    if !input.chars().all(|c| c.is_ascii()) {
-        return None
-    }
     for c in input[0..2].bytes() {
         if c < b'A' || c > b'Z' {
             return None
@@ -31,6 +28,9 @@ pub fn compute_isin_checksum(input: &str) -> Option<(u8, u8)> {
     let mut digits = [0u8; 32];
     let mut p = 0;
     for c in input.bytes() {
+        if !c.is_ascii() {
+            return None
+        }
         p += if c < 58 {
             digits[p] = c - 48;
             1
