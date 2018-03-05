@@ -62,8 +62,14 @@ pub fn compute_isin_checksum(input: &str) -> Option<(u8, u8)> {
             if p < 10 {
                 checksum += p;
             } else {
-                checksum += p / 10;
-                checksum += p % 10;
+                checksum += match p {
+                    10 => 1,
+                    12 => 3,
+                    14 => 5,
+                    16 => 7,
+                    18 => 9,
+                    _ => unreachable!()
+                };
             }
         }
         flag = !flag;
