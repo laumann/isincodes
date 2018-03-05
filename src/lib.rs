@@ -41,6 +41,7 @@ pub fn compute_isin_checksum(input: &str) -> Option<(u8, u8)> {
             2
         };
     }
+    let p = p;
 
     // Computing the checksum.
     //
@@ -54,26 +55,28 @@ pub fn compute_isin_checksum(input: &str) -> Option<(u8, u8)> {
     // added as 1 and 4.
     let l = p - 1;
     let mut checksum = 0;
-    let mut flag = l % 2 == 0;
-    for &d in &digits[0..l] {
-        if flag {
-            checksum += d;
+    let flag = l % 2 == 0;
+    let mut i = if flag { 0 } else { 1 };
+    while i < l {
+        checksum += digits[i];
+        i += 2;
+    }
+    i = if flag { 1 } else { 0 };
+    while i < l {
+        let p = digits[i] << 1;
+        if p < 10 {
+            checksum += p;
         } else {
-            let p = d << 1;
-            if p < 10 {
-                checksum += p;
-            } else {
-                checksum += match p {
-                    10 => 1,
-                    12 => 3,
-                    14 => 5,
-                    16 => 7,
-                    18 => 9,
-                    _ => unreachable!()
-                };
-            }
+            checksum += match p {
+                10 => 1,
+                12 => 3,
+                14 => 5,
+                16 => 7,
+                18 => 9,
+                _ => unreachable!()
+            };
         }
-        flag = !flag;
+        i += 2;
     }
 
     let c = (10 - (checksum % 10)) % 10;
