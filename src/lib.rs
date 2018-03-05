@@ -28,6 +28,20 @@ pub fn compute_isin_checksum(input: &str) -> Option<(u8, u8)> {
     // string of numbers for computing the checksum
     //
     // Iterate through all the numbers computing a running checksum
+    let mut digits = [0u8; 32];
+    let mut p = 0;
+    for c in input.bytes() {
+        let d = c - if c < 58 { 48 } else { 55 };
+        p += if d < 10 {
+            digits[p] = d;
+            1
+        } else {
+            digits[p] = d / 10;
+            digits[p+1] = d % 10;
+            2
+        };
+    }
+    /*
     let digits = input.bytes()
         .map(|c| c - if c < 58 { 48 } else { 55 })
         .fold(vec![], |mut v, c| {
@@ -39,6 +53,7 @@ pub fn compute_isin_checksum(input: &str) -> Option<(u8, u8)> {
             }
             v
         });
+    */
 
     // Computing the checksum.
     //
@@ -51,7 +66,7 @@ pub fn compute_isin_checksum(input: &str) -> Option<(u8, u8)> {
     // (after being doubled) its individiual digits are added, for example 14 is
     // added as 1 and 4.
 
-    let l = digits.len() - 1;
+    let l = p - 1; // digits.len() - 1;
     let mut checksum = 0;
     let mut flag = l % 2 == 0;
     for &d in &digits[0..l] {
