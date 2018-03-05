@@ -31,11 +31,11 @@ pub fn compute_isin_checksum(input: &str) -> Option<(u8, u8)> {
     let mut digits = [0u8; 32];
     let mut p = 0;
     for c in input.bytes() {
-        let d = c - if c < 58 { 48 } else { 55 };
-        p += if d < 10 {
-            digits[p] = d;
+        p += if c < 58 {
+            digits[p] = c - 48;
             1
         } else {
+            let d = c - 55;
             digits[p] = d / 10;
             digits[p+1] = d % 10;
             2
