@@ -8,8 +8,5 @@ use test::Bencher;
 fn validate(b: &mut Bencher) {
 
     const ISIN: &'static str = "US38259P5089";
-    b.iter(|| {
-        isincodes::validate_isin(ISIN);
-    });
+    b.iter(|| isincodes::validate_isin(ISIN));
 }
-

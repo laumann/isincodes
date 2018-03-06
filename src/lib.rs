@@ -13,11 +13,11 @@
 /// `None` if the input is malformed in some way.
 pub fn compute_isin_checksum(input: &str) -> Option<(u8, u8)> {
     if input.len() != 12 {
-        return None
+        return None;
     }
     for c in input[0..2].bytes() {
         if c < b'A' || c > b'Z' {
-            return None
+            return None;
         }
     }
 
@@ -29,7 +29,7 @@ pub fn compute_isin_checksum(input: &str) -> Option<(u8, u8)> {
     let mut p = 0;
     for c in input.bytes() {
         if !c.is_ascii() {
-            return None
+            return None;
         }
         p += if c < 58 {
             digits[p] = c - 48;
@@ -37,7 +37,7 @@ pub fn compute_isin_checksum(input: &str) -> Option<(u8, u8)> {
         } else {
             let d = c - 55;
             digits[p] = d / 10;
-            digits[p+1] = d % 10;
+            digits[p + 1] = d % 10;
             2
         };
     }
@@ -73,7 +73,7 @@ pub fn compute_isin_checksum(input: &str) -> Option<(u8, u8)> {
                 14 => 5,
                 16 => 7,
                 18 => 9,
-                _ => unreachable!()
+                _ => unreachable!(),
             };
         }
         i += 2;
@@ -116,7 +116,13 @@ mod tests {
         ];
 
         for (input, expected) in cases {
-            assert_eq!(validate_isin(input), expected, "input = {} (expected: {})", input, expected);
+            assert_eq!(
+                validate_isin(input),
+                expected,
+                "input = {} (expected: {})",
+                input,
+                expected
+            );
         }
     }
 
@@ -143,7 +149,13 @@ mod tests {
         ];
 
         for (input, expected) in cases {
-            assert_eq!(compute_isin_checksum(input), expected, "input = {:?} (expected: {:?})", input, expected);
+            assert_eq!(
+                compute_isin_checksum(input),
+                expected,
+                "input = {:?} (expected: {:?})",
+                input,
+                expected
+            );
         }
     }
 }
