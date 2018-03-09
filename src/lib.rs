@@ -20,6 +20,11 @@ pub fn compute_isin_checksum(input: &str) -> Option<(u8, u8)> {
             return None;
         }
     }
+    for c in input[11..12].bytes() {
+        if c < b'0' || c > b'9' {
+            return None;
+        }
+    }
 
     // The trick here is that we should view the array of numbers as a single
     // string of numbers for computing the checksum
@@ -28,7 +33,7 @@ pub fn compute_isin_checksum(input: &str) -> Option<(u8, u8)> {
     let mut digits = [0u8; 32];
     let mut p = 0;
     for c in input.bytes() {
-        if !c.is_ascii() {
+        if (c < b'A' || c > b'Z') && (c < b'0' || c > b'9') {
             return None;
         }
         p += if c < 58 {
@@ -146,6 +151,7 @@ mod tests {
             ("GB0002634946", Some((6, 6))),
             ("NL0000729408", Some((8, 8))),
             ("DE000CM7VX13", Some((3, 3))),
+            ("DE000CM7VX1T", None),
         ];
 
         for (input, expected) in cases {
