@@ -67,20 +67,12 @@ pub fn compute_isin_checksum(input: &str) -> Option<(u8, u8)> {
         i += 2;
     }
     i = if flag { 1 } else { 0 };
+
+    // An array used to compute the cross-sum of 2*x when 0 <= x < 10. Instead of computing these
+    // values at runtime, just lookup the value in this array.
+    const DOUBLE_CROSS_SUM: [u8; 10] = [0, 2, 4, 6, 8, 1, 3, 5, 7, 9];
     while i < l {
-        let p = digits[i] << 1;
-        if p < 10 {
-            checksum += p;
-        } else {
-            checksum += match p {
-                10 => 1,
-                12 => 3,
-                14 => 5,
-                16 => 7,
-                18 => 9,
-                _ => unreachable!(),
-            };
-        }
+        checksum += DOUBLE_CROSS_SUM[digits[i] as usize];
         i += 2;
     }
 
