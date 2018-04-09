@@ -56,8 +56,8 @@ pub fn compute_isin_checksum(input: &str) -> Option<(u8, u8)> {
     // digit) should have all its entries multiplied by two.
     //
     // All the numbers are then summed together. If a number is larger than 10
-    // (after being doubled) its individiual digits are added, for example 14 is
-    // added as 1 and 4.
+    // (after being doubled) its individual digits are added, for example 14 is
+    // added as 1 + 4 = 5.
     let l = p - 1;
     let mut checksum = 0;
     let flag = l % 2 == 0;
