@@ -8,8 +8,8 @@ The author found many ISIN code validators online, none of which actually
 provided an actual implementation (just an interface to use it). This
 implementation is pieced together from various sources, primarily [[1]] and [[2]].
 
-An ISIN code is defined in ISO 6166, as a 12-character alpha-numeric code. At
-some point in time you want to validate that a given 12-character string (or
+An ISIN code is defined in ISO 6166 [[5]], as a 12-character alpha-numeric code. At
+some point in time you may want to validate that a given 12-character string (or
 byte sequence) is a valid ISIN code.
 
 This implementation handles just validating that the structure of the ISIN is
@@ -51,6 +51,8 @@ References
  2. https://rosettacode.org/wiki/Validate_International_Securities_Identification_Number
  3. https://www.isin.org/
  4. https://www.isincodes.net/validate-isin/
+ 5. https://www.iso.org/standard/44811.html
 
 [1]: https://en.wikipedia.org/wiki/International_Securities_Identification_Number#Examples
 [2]: https://rosettacode.org/wiki/Validate_International_Securities_Identification_Number
+[5]: https://www.iso.org/standard/44811.html
