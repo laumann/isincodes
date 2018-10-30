@@ -15,15 +15,11 @@ pub fn compute_isin_checksum(input: &str) -> Option<(u8, u8)> {
     if input.len() != 12 {
         return None;
     }
-    for c in input[0..2].bytes() {
-        if c < b'A' || c > b'Z' {
-            return None;
-        }
+    if input[0..2].bytes().any(|c| c < b'A' || c > b'Z') {
+        return None;
     }
-    for c in input[11..12].bytes() {
-        if c < b'0' || c > b'9' {
-            return None;
-        }
+    if input[11..12].bytes().any(|c| c < b'0' || c > b'9') {
+        return None;
     }
 
     // The trick here is that we should view the array of numbers as a single
